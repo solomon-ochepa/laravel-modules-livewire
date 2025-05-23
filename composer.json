@@ -1,6 +1,6 @@
 {
     "name": "mhmiton/laravel-modules-livewire",
-    "description": "Using Laravel Livewire in Laravel Modules package with automatically registered livewire components for every modules.",
+    "description": "Livewire integration for the laravel-modules package, enabling automatic component registration within each module.",
     "keywords": [
         "laravel",
         "modules",
@@ -29,6 +29,9 @@
         "livewire/livewire": "^3.0",
         "nwidart/laravel-modules": ">=11.0"
     },
+    "require-dev": {
+        "laravel/pint": "^1.22"
+    },
     "extra": {
         "laravel": {
             "providers": [
@@ -42,5 +45,13 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "wikimedia/composer-merge-plugin": true
+        }
+    },
+    "scripts": {
+        "pint": "pint"
+    }
 }
