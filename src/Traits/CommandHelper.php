@@ -16,7 +16,7 @@ trait CommandHelper
         $modulePath = $module ? $module->getPath() : null;
 
         // If module path not found, then check custom module path
-        if (! \File::isDirectory($modulePath)) {
+        if (! File::isDirectory($modulePath)) {
             return $this->getCustomModule() ? true : false;
         }
 
@@ -190,11 +190,11 @@ trait CommandHelper
 
     protected function isClassNameValid($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isClassNameValid($name);
+        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand)->isClassNameValid($name);
     }
 
     protected function isReservedClassName($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isReservedClassName($name);
+        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand)->isReservedClassName($name);
     }
 }
