@@ -3,7 +3,7 @@
 namespace Mhmiton\LaravelModulesLivewire\Traits;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
+use Livewire\Features\SupportConsoleCommands\Commands\MakeCommand;
 
 trait CommandHelper
 {
@@ -190,11 +190,11 @@ trait CommandHelper
 
     protected function isClassNameValid($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand)->isClassNameValid($name);
+        return (new MakeCommand)->isClassNameValid($name);
     }
 
     protected function isReservedClassName($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand)->isReservedClassName($name);
+        return (new MakeCommand)->isReservedClassName($name);
     }
 }
