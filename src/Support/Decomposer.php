@@ -2,7 +2,9 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Support;
 
+use Exception;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class Decomposer
@@ -15,7 +17,7 @@ class Decomposer
             $composer = (new Filesystem)->get(base_path('composer.lock'));
 
             return collect(data_get(json_decode($composer, true), 'packages'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return collect([]);
         }
     }
@@ -24,13 +26,13 @@ class Decomposer
     {
         $packages = self::getComposerData();
 
-        if (! \File::isDirectory(base_path("/vendor/{$packageName}"))) {
+        if (! File::isDirectory(base_path("/vendor/{$packageName}"))) {
             return null;
         }
 
         $version = $packages->firstWhere('name', $packageName)['version'] ?? null;
 
-        return (object) ['name' => $packageName, 'version' => \Str::after($version, 'v')];
+        return (object) ['name' => $packageName, 'version' => Str::after($version, 'v')];
     }
 
     public static function hasPackage($packageName)

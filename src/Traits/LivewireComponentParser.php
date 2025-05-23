@@ -45,44 +45,25 @@ trait LivewireComponentParser
 
     protected function getComponent()
     {
-        $classInfo = $this->getClassInfo();
-
-        $viewInfo = $this->getViewInfo();
-
-        $stubInfo = $this->getStubInfo();
-
         return (object) [
-            'class' => $classInfo,
-            'view' => $viewInfo,
-            'stub' => $stubInfo,
+            'class' => $this->getClassInfo(),
+            'view' => $this->getViewInfo(),
+            'stub' => $this->getStubInfo(),
         ];
     }
 
     protected function getClassInfo()
     {
-        $modulePath = $this->getModulePath(true);
-
-        $moduleLivewireNamespace = $this->getModuleLivewireNamespace();
-
-        $classDir = (string) Str::of($modulePath)
-            ->append('/'.$moduleLivewireNamespace)
-            ->replace(['\\'], '/');
-
+        $classDir = $this->path($this->getModulePath($this->getModuleLivewirePath()));
         $classPath = $this->directories->implode('/');
-
-        $namespace = $this->getNamespace($classPath);
-
-        $className = $this->directories->last();
-
-        $componentTag = $this->getComponentTag();
 
         return (object) [
             'dir' => $classDir,
             'path' => $classPath,
-            'file' => $classDir.'/'.$classPath.'.php',
-            'namespace' => $namespace,
-            'name' => $className,
-            'tag' => $componentTag,
+            'file' => "{$classDir}/{$classPath}.php",
+            'namespace' => $this->getNamespace($classPath),
+            'name' => $this->directories->last(),
+            'tag' => $this->getComponentTag(),
         ];
     }
 
@@ -90,9 +71,7 @@ trait LivewireComponentParser
     {
         $moduleLivewireViewDir = $this->getModuleLivewireViewDir();
 
-        $path = $this->directories
-            ->map([Str::class, 'kebab'])
-            ->implode('/');
+        $path = $this->directories->map([Str::class, 'kebab'])->implode('/');
 
         if ($this->option('view')) {
             $path = strtr($this->option('view'), ['.' => '/']);
@@ -199,9 +178,7 @@ trait LivewireComponentParser
 
         $tag = "<livewire:{$this->getModuleLowerName()}::{$directoryAsView} />";
 
-        $tagWithOutIndex = Str::replaceLast('.index', '', $tag);
-
-        return $tagWithOutIndex;
+        return Str::replaceLast('.index', '', $tag);
     }
 
     protected function getComponentQuote()
@@ -209,7 +186,13 @@ trait LivewireComponentParser
         return "The <code>{$this->getClassName()}</code> livewire component is loaded from the ".($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
     }
 
-    protected function getBasePath($path = null)
+    /**
+     * Retrieves the root path for the application.
+     *
+     * @param  string|null  $path  Optional subpath to append to the base path.
+     * @return string The full base path for the application.
+     */
+    protected function getBasePath(?string $path = null): string
     {
         return strtr(base_path($path), ['\\' => '/']);
     }
