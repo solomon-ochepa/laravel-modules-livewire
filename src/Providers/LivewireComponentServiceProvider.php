@@ -11,11 +11,14 @@ use Livewire\Livewire;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
+use Nwidart\Modules\Traits\PathNamespace;
 use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
 class LivewireComponentServiceProvider extends ServiceProvider
 {
+    use PathNamespace;
+
     /**
      * Register the service provider.
      */
@@ -44,18 +47,16 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
         $modules = \Nwidart\Modules\Facades\Module::toCollection();
 
-        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
+        $modulesLivewireNamespace = config('modules-livewire.namespace', 'App\\Livewire');
 
         $modules->each(function ($module) use ($modulesLivewireNamespace) {
-            $directory = (string) Str::of($module->getAppPath())
-                ->append('/'.$modulesLivewireNamespace)
-                ->replace(['\\'], '/');
+            $directory = Str::of($module->app_path($modulesLivewireNamespace))->toString();
 
             $moduleNamespace = method_exists($module, 'getNamespace')
                 ? $module->getNamespace()
                 : config('modules.namespace', 'Modules');
 
-            $namespace = $moduleNamespace.'\\'.$module->getName().'\\'.$modulesLivewireNamespace;
+            $namespace = $this->namespace($moduleNamespace.'\\'.$module->getName().'\\'.$modulesLivewireNamespace);
 
             $this->registerComponentDirectory($directory, $namespace, $module->getLowerName().'::');
 
