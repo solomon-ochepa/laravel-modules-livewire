@@ -13,8 +13,6 @@ trait VoltComponentParser
 
     protected $component;
 
-    protected $module;
-
     protected $directories;
 
     protected function parser()
@@ -26,12 +24,6 @@ trait VoltComponentParser
 
             return false;
         }
-
-        if (! $module = $this->getModule()) {
-            return false;
-        }
-
-        $this->module = $module;
 
         $this->directories = collect(
             preg_split('/[.\/(\\\\)]+/', $this->argument('component'))

@@ -12,8 +12,6 @@ trait LivewireComponentParser
 
     protected $component;
 
-    protected $module;
-
     protected $directories;
 
     protected function parser()
@@ -27,12 +25,6 @@ trait LivewireComponentParser
 
             return false;
         }
-
-        if (! $module = $this->getModule()) {
-            return false;
-        }
-
-        $this->module = $module;
 
         $this->directories = collect(
             preg_split('/[.\/(\\\\)]+/', $this->argument('component'))

@@ -27,6 +27,10 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
+        if (! $this->getModule()) {
+            return false;
+        }
+
         if (! $this->parser()) {
             return false;
         }

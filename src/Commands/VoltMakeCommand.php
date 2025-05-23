@@ -13,8 +13,6 @@ class VoltMakeCommand extends Command implements PromptsForMissingInput
 
     protected $component;
 
-    protected $module;
-
     protected $directories;
 
     protected $signature = 'module:make-volt {component} {module} {--view=} {--class} {--functional} {--force} {--stub=}';
@@ -33,6 +31,10 @@ class VoltMakeCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
+        if (! $this->getModule()) {
+            return false;
+        }
+
         if (! $this->parser()) {
             return false;
         }
