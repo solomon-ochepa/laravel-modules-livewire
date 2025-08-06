@@ -10,26 +10,13 @@ class LivewireMakeCommandTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        // Create a test module directory structure
-        $this->createTestModule();
-    }
-
-    protected function tearDown(): void
-    {
-        // Clean up test files
-        $this->cleanupTestModule();
-
-        parent::tearDown();
     }
 
     public function test_core_module_is_exists()
     {
-        $this->assertDirectoryExists(base_path('Modules/Core'));
-        $this->assertFileExists(base_path('Modules/Core/module.json'));
+        $hasModule = $this->hasTestModule();
 
-        // Debug: Check what base_path returns
-        $this->assertTrue(true, "base_path() returns: " . base_path());
+        $this->assertTrue($hasModule);
     }
 
     public function test_can_create_livewire_component_with_slash_notation()
@@ -160,36 +147,5 @@ class LivewireMakeCommandTest extends TestCase
             'module' => 'Core'
         ])
         ->assertExitCode(0);
-    }
-
-    protected function createTestModule()
-    {
-        $modulePath = base_path('Modules/Core');
-
-        // Debug: Check if the path is correct
-        $this->assertTrue(true, "Creating module at: " . $modulePath);
-
-        // Create module directory structure
-        File::makeDirectory($modulePath . '/app/Livewire', 0755, true, true);
-        File::makeDirectory($modulePath . '/resources/views/livewire', 0755, true, true);
-
-        // Create module.json
-        File::put($modulePath . '/module.json', json_encode([
-            'name' => 'Core',
-            'alias' => 'core',
-            'namespace' => 'Modules\\Core'
-        ]));
-
-        // Debug: Check if files were created
-        $this->assertDirectoryExists($modulePath, "Module directory was not created");
-        $this->assertFileExists($modulePath . '/module.json', "Module.json was not created");
-    }
-
-    protected function cleanupTestModule()
-    {
-        $modulePath = base_path('Modules/Core');
-        if (File::exists($modulePath)) {
-            File::deleteDirectory($modulePath);
-        }
     }
 }

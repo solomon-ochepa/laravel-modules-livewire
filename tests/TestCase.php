@@ -2,14 +2,20 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\LivewireServiceProvider;
 use Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Commands\LivewireMakeCommand;
 use Mhmiton\LaravelModulesLivewire\Commands\LivewireMakeFormCommand;
 use Mhmiton\LaravelModulesLivewire\Commands\VoltMakeCommand;
+use Mhmiton\LaravelModulesLivewire\Tests\Traits\InitModule;
+use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
 
 class TestCase extends TestbenchTestCase
 {
+    use InitModule, RefreshDatabase;
+
     /**
      * Automatically enables package discoveries.
      *
@@ -21,78 +27,48 @@ class TestCase extends TestbenchTestCase
     {
         parent::setUp();
 
-        // Mock the Modules facade to prevent binding resolution errors
-        $this->app->singleton('modules', function () {
-            return new class {
-                public function toCollection()
-                {
-                    return collect([]);
-                }
+        $this->artisan('optimize:clear');
 
-                public function find($name)
-                {
-                    // Return a mock module object for testing
-                    return new class($name) {
-                        private $name;
+        $kernel = $this->app->make('Illuminate\Contracts\Console\Kernel');
+        $kernel->registerCommand($this->app->make(LivewireMakeCommand::class));
+        $kernel->registerCommand($this->app->make(LivewireMakeFormCommand::class));
+        $kernel->registerCommand($this->app->make(VoltMakeCommand::class));
 
-                        public function __construct($name) {
-                            $this->name = $name;
-                        }
-
-                        public function getName()
-                        {
-                            return $this->name;
-                        }
-
-                        public function getLowerName()
-                        {
-                            return strtolower($this->name);
-                        }
-
-                        public function getPath()
-                        {
-                            return base_path('Modules/' . $this->name);
-                        }
-
-                        public function getAppPath()
-                        {
-                            return base_path('Modules/' . $this->name . '/app');
-                        }
-
-                        public function getNamespace()
-                        {
-                            return 'Modules\\' . $this->name;
-                        }
-                    };
-                }
-
-                public function all()
-                {
-                    return [];
-                }
-            };
-        });
-
-        // Register the Modules facade alias
-        if (!class_exists('Module')) {
-            class_alias('Illuminate\Support\Facades\Facade', 'Module');
-        }
-
-        // Manually register commands for testing
-        $this->app->make('Illuminate\Contracts\Console\Kernel')->registerCommand(new LivewireMakeCommand());
-        $this->app->make('Illuminate\Contracts\Console\Kernel')->registerCommand(new LivewireMakeFormCommand());
-        $this->app->make('Illuminate\Contracts\Console\Kernel')->registerCommand(new VoltMakeCommand());
+        $this->setUpModule();
     }
 
     protected function getPackageProviders($app)
     {
         return [
+            LaravelModulesServiceProvider::class,
             LaravelModulesLivewireServiceProvider::class,
+            LivewireServiceProvider::class,
         ];
     }
 
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
+
+        $app['config']->set('cache.default', 'array');
+        $app['config']->set('session.driver', 'array');
+        $app['config']->set('queue.default', 'sync');
+
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
+
+        $modulesConfig = require __DIR__.'/../vendor/nwidart/laravel-modules/config/config.php';
+
+        $app['config']->set('modules', $modulesConfig);
+
+        $livewireConfig = require __DIR__.'/../vendor/livewire/livewire/config/livewire.php';
+
+        $app['config']->set('livewire', $livewireConfig);
+
         $modulesLivewireConfig = require __DIR__.'/../config/modules-livewire.php';
 
         $app['config']->set('modules-livewire', $modulesLivewireConfig);
