@@ -69,6 +69,11 @@ class LivewireComponentServiceProvider extends ServiceProvider
                 viewPath: $moduleLivewireViewPath
             );
 
+            // Register a location for class-based components
+            Livewire::addLocation(
+                classNamespace: $namespace
+            );
+
             // Register Class Based Components with Namespace
             Livewire::addNamespace(
                 namespace: $module->getLowerName(),
@@ -111,6 +116,11 @@ class LivewireComponentServiceProvider extends ServiceProvider
             Livewire::addNamespace(
                 namespace: $lowerName,
                 viewPath: $moduleLivewireViewPath
+            );
+
+            // Register a location for class-based components
+            Livewire::addLocation(
+                classNamespace: $namespace
             );
 
             // Register Class Based Components with Namespace
