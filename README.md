@@ -25,7 +25,7 @@ composer require mhmiton/laravel-modules-livewire
 Publish the package's configuration file:
 
 ```
-php artisan vendor:publish --tag=modules-livewire-config
+php artisan vendor:publish --tag=modules-livewire:config
 ```
 
 ### Creating Single File Components (SFC):
@@ -209,7 +209,7 @@ TAG: <livewire:core::pages.about-page />
 Publish the package's stubs:
 
 ```
-php artisan vendor:publish --tag=modules-livewire-stub
+php artisan vendor:publish --tag=modules-livewire:stub
 ```
 
 After publishing the stubs, will create these files. And when running the make command, will use these stub files by default.
